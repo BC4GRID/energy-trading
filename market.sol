@@ -91,7 +91,7 @@ contract Trading {
     function RetrieveTokens(uint256 offerId) public {
         require(offers[offerId].exists , "No offer with given ID." );
         require(msg.sender == offers[offerId].sellerAddress, "Only creator of the offer can retrieve tokens."); //implicitly checks if caller is registered
-        require(offers[offerId].validUntil>= block.timestamp, "The offer is still active.");
+        require(offers[offerId].validUntil< block.timestamp, "The offer is still active.");
         require(offers[offerId].energyAmount>0, "No tokens the retrieve, the offer was already closed.");
         //ep._transfer(address(this), msg.sender, offers[offerId].energyAmount );
         ep.transfer(msg.sender, offers[offerId].energyAmount );
