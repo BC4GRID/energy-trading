@@ -12,8 +12,6 @@ contract EnergyPool is ERC20 {
     mapping(address => bool) private isMeterRegistered;
 
     
-
-
     constructor() ERC20("EnergyToken", "ENT") {
         owner = msg.sender;
     }
@@ -28,19 +26,38 @@ contract EnergyPool is ERC20 {
         return 2;
     }
 
-    //used for registration of smart meters from the microgrid
+    /* Method used to register smart meter.
+    
+    NOTE: Only the owner of EnergyPool contract may register meters.
+
+    Params:
+    meterAddress - Ethereum address of smart meter
+    */
     function RegisterSmartMeter(address meterAddress) public OnlyOwner returns (bool) {
         require(isMeterRegistered[meterAddress] == false, "Smart meter address already registered");
         isMeterRegistered[meterAddress] = true;
         return true;
     }
 
-    //used for revoking registration of smart meters from the microgrid
+    /* Method used to unregister smart meter.
+    
+    NOTE: Only the owner of EnergyPool contract may unregister meters.
+
+    Params:
+    meterAddress - Ethereum address of smart meter
+    */
     function UnregisterSmartMeter(address meterAddress) public OnlyOwner returns (bool) {
         require(isMeterRegistered[meterAddress], "Smart meter address is not registered");
         isMeterRegistered[meterAddress] = false;
         return true;
     }
+
+    
+    /* Method used to by prosumers that send energy to the grid. In return, they recieve tokens.
+    
+    Params:
+    energySent - The amount of sent energy
+    */
 
     //function called by a smart meter when prosumers fills the pool, energySent should be same decimal as token (2) 1token = 1kwh
     function SendEnergy(uint256 energySent) public {
@@ -50,7 +67,11 @@ contract EnergyPool is ERC20 {
         _mint(msg.sender, energySent);
     }
 
-    //function called by a smart meter when prosumer asks for energy from the pool, energyAmount should be same decimal as token (2) 1token = 1kwh
+    /* Method used by consumers to trade tokens for energy. This effectively burns the tokens.
+    
+    Params:
+    energyReceived - The amount of received energy
+    */
     function ReceiveEnegy(uint256 energyReceived) public {
         require(isMeterRegistered[msg.sender], "The calling address is not registered smart meter");
         require(energyReceived > 0, "Energy taken from the energy pool must be greater than 0.");
