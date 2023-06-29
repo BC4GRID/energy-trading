@@ -93,7 +93,7 @@ contract Trading {
             emit OfferModified(offerId, offers[offerId].sellerAddress, offers[offerId].validUntil, offers[offerId].pricePerEnergyAmount, offers[offerId].energyAmount);
     }
 
-    /* Method used by energy selelrs to modify their existing offers. Fires OfferModified event.
+    /* Method used by energy sellers to modify their existing offers. Fires OfferModified event.
        
     NOTE: Before modifying an offer, for security reasons, the seller must
     authorize this smart contract to transfer tokens in seller's name using increaseAllowance method of ERC20 token accordingly.
@@ -117,7 +117,7 @@ contract Trading {
         emit OfferCreated(offerId, offers[offerId].sellerAddress , offers[offerId].validUntil, offers[offerId].pricePerEnergyAmount, offers[offerId].energyAmount);
     }
 
-    /* Method used by energy selelrs to retrieve their tokens from the smart contract after the offer expires.
+    /* Method used by energy sellers to retrieve their tokens from the smart contract after the offer expires.
        
     NOTE: Tokens can be recovered only from expired offers.
 
@@ -132,5 +132,52 @@ contract Trading {
         ep.transfer(msg.sender, offers[offerId].energyAmount );
         offers[offerId].energyAmount = 0;
 
+    }
+
+    /* Method used to list ids of all active energy offers.
+       
+    NOTE: This function costs gas only when called by another contract.
+
+    Returns:
+    Array of uint256 containing ids of offers.
+    */
+    function ListOffers() public view returns (uint256[] memory){
+        uint256[] memory validOffers;
+        uint256 size = 0;
+        for (uint256 i=1; i<=currentId; i++) {
+            if(offers[i].exists && offers[i].validUntil > block.timestamp && offers[i].energyAmount != 0)
+                size++;
+        }
+
+        uint256 j=0;
+        validOffers = new uint256[](size);
+
+        for (uint256 i=1; i<=currentId; i++) {
+            if(offers[i].exists && offers[i].validUntil > block.timestamp && offers[i].energyAmount != 0)
+                validOffers[j] = i;
+                j++;
+        }
+        return validOffers;
+    }
+
+    /* Method used to get details for specific energy offer.
+    
+    NOTE: This function costs gas only when called by another contract.
+    
+    Params:
+    offerId - unique id of the offer
+    
+    Returns:
+    address of seller, the amount of energy for sell, expiration of the offer, price (in Wei) per unit of energy
+    */
+    function GetOfferDetails(uint256 offerId) public view returns (address, uint256, uint256, uint256){
+        require(offers[offerId].exists , "No offer with given ID.");
+        require(offers[offerId].validUntil>= block.timestamp, "The offer expired");
+        require(offers[offerId].energyAmount !=0, "The offer is closed");
+        return (
+            offers[offerId].sellerAddress, 
+            offers[offerId].energyAmount,
+            offers[offerId].validUntil,
+            offers[offerId].pricePerEnergyAmount);
     }
 }
