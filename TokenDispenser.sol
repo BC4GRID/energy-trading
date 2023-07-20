@@ -17,7 +17,7 @@ contract TokenDispenser is ERC20 {
         _;
     }
 
-    //stavljamo da su decimale tokena 2. Tako da ako neko ima 200 tokena to se prikazuje kao 2,00
+    // the number of decimals is set to 2. For example, a balance of `200` tokens is displayed to a user as `2.00`
     function decimals() public view virtual override returns (uint8) {
         return 2;
     }
