@@ -68,7 +68,7 @@ contract TokenDispenser is ERC20 {
     Params:
     energyReceived - The amount of received energy
     */
-    function ReceiveEnegy(uint256 energyReceived) public {
+    function ReceiveEnergy(uint256 energyReceived) public {
         require(isMeterRegistered[msg.sender], "The calling address is not registered smart meter");
         require(energyReceived > 0, "Energy taken from the energy pool must be greater than 0.");
         //burn the tokens of the consumer, as he used them to take energy from the pool
