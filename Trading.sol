@@ -145,17 +145,20 @@ contract Trading {
         uint256[] memory validOffers;
         uint256 size = 0;
         for (uint256 i=1; i<=currentId; i++) {
-            if(offers[i].exists && offers[i].validUntil > block.timestamp && offers[i].energyAmount != 0)
+            if(offers[i].exists && offers[i].validUntil > block.timestamp && offers[i].energyAmount != 0) {
                 size++;
+            }
+                
         }
 
         uint256 j=0;
         validOffers = new uint256[](size);
 
         for (uint256 i=1; i<=currentId; i++) {
-            if(offers[i].exists && offers[i].validUntil > block.timestamp && offers[i].energyAmount != 0)
+            if(offers[i].exists && offers[i].validUntil > block.timestamp && offers[i].energyAmount != 0) {
                 validOffers[j] = i;
                 j++;
+            }
         }
         return validOffers;
     }
@@ -172,8 +175,8 @@ contract Trading {
     */
     function GetOfferDetails(uint256 offerId) public view returns (address, uint256, uint256, uint256){
         require(offers[offerId].exists , "No offer with given ID.");
-        require(offers[offerId].validUntil>= block.timestamp, "The offer expired");
-        require(offers[offerId].energyAmount !=0, "The offer is closed");
+        //require(offers[offerId].validUntil>= block.timestamp, "The offer expired");
+        //require(offers[offerId].energyAmount !=0, "The offer is closed");
         return (
             offers[offerId].sellerAddress, 
             offers[offerId].energyAmount,
