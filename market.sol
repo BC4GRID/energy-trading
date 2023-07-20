@@ -15,7 +15,7 @@ contract Trading {
     address private owner;
     uint256 private currentId;
     address private epAddress;
-    EnergyPool private ep;
+    TokenDispenser private ep;
 
     mapping (uint256 => TradeOffer) public offers;
 
@@ -34,9 +34,9 @@ contract Trading {
         return currentId;
     }
 
-    constructor(address EnergyPoolContractAddress) {
-        epAddress = EnergyPoolContractAddress;
-        ep = EnergyPool(EnergyPoolContractAddress);
+    constructor(address TokenDispenserContractAddress) {
+        epAddress = TokenDispenserContractAddress;
+        ep = TokenDispenser(TokenDispenserContractAddress);
         owner = msg.sender;
     }
 
