@@ -24,7 +24,7 @@ contract TokenDispenser is ERC20 {
 
     /* Method used to register smart meter.
     
-    NOTE: Only the owner of EnergyPool contract may register meters.
+    NOTE: Only the owner of the TokenDispenser contract may register meters.
 
     Params:
     meterAddress - Ethereum address of smart meter
@@ -37,7 +37,7 @@ contract TokenDispenser is ERC20 {
 
     /* Method used to unregister smart meter.
     
-    NOTE: Only the owner of EnergyPool contract may unregister meters.
+    NOTE: Only the owner of the TokenDispenser contract may unregister meters.
 
     Params:
     meterAddress - Ethereum address of smart meter
@@ -49,7 +49,7 @@ contract TokenDispenser is ERC20 {
     }
 
     
-    /* Method used to by prosumers that send energy to the grid. In return, they recieve tokens.
+    /* Method used by prosumers that send energy to the grid. In return, they recieve tokens.
     
     Params:
     energySent - The amount of sent energy

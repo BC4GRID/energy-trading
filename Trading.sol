@@ -67,7 +67,7 @@ contract Trading {
         emit OfferCreated(id, msg.sender, validUntil, pricePerEnergyAmount, energyAmount);
     }
 
-    /* Method used by energy buyers to buy enegry from an offer. The buyer doesn't need to buy all energy from the offer. Fires OfferModified or OfferClosed events.
+    /* Method used by energy buyers to buy energy from an offer. The buyer doesn't need to buy all energy from the offer. Fires OfferModified or OfferClosed events.
     When method is closed, seller may recover remaining unsold tokens using RetrieveTokens method.
     
     NOTE: Method is payable, which means that buyer must send at least energyAmount*offers[offerId].pricePerEnergyAmount Weis when calling this method.
