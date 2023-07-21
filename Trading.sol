@@ -183,4 +183,24 @@ contract Trading {
             offers[offerId].validUntil,
             offers[offerId].pricePerEnergyAmount);
     }
+
+    //WARNING:selfdestruct is deprecated, and will probably change functionality and break the contract in the future
+    function deleteContractFullReturn() external {
+        require(owner == msg.sender, "Not an owner");
+        for (uint256 i=1; i<=currentId; i++) {
+            if(offers[i].exists && offers[i].energyAmount != 0) {
+                //return all tokens to their original owners
+                ep.transfer(offers[i].sellerAddress, offers[i].energyAmount );
+            }
+                
+        }
+        selfdestruct(payable(msg.sender));
+    }
+
+    //WARNING:selfdestruct is deprecated, and will probably change functionality and break the contract in the future
+    function deleteContractOwnerReturn() external {
+        require(owner == msg.sender, "Not an owner");
+        ep.transfer(owner, ep.balanceOf(address(this)));
+        selfdestruct(payable(msg.sender));
+    }
 }

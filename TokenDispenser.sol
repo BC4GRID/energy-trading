@@ -79,5 +79,10 @@ contract TokenDispenser is ERC20 {
         return isMeterRegistered[meterAddress];
     }
 
+    //WARNING:selfdestruct is deprecated, and will probably change functionality and break the contract in the future
+    function deleteContract() external {
+        require(owner == msg.sender, "Not an owner");
+        selfdestruct(payable(msg.sender));
+    }
 }
 
