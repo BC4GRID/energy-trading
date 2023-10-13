@@ -88,6 +88,7 @@ contract Trading {
         require(ep.IsRegistered(msg.sender), "Only registered user (meter) may buy energy from offers");
         require(offers[offerId].exists , "No offer with given ID." );
         require(block.timestamp <= offers[offerId].validUntil, "Offer expired.");
+        require(msg.sender != offers[offerId].sellerAddress, "Can't buy from own offer");
         require(energyAmount <= offers[offerId].energyAmount, "Not enough energy in the offer");
         require(msg.value >= energyAmount*offers[offerId].pricePerEnergyAmount, "Not enough money sent to buy energy");
         //send money to seller
