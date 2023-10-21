@@ -63,6 +63,8 @@ contract Trading {
         require(ep.IsRegistered(msg.sender), "Only registered user (meter) may make sell offers");
         require(energyAmount <= ep.balanceOf(msg.sender), "Must have tokens to sell.");
         require(validUntil > block.timestamp,"Offer deadline must be in the future.");//TODO: videti koliko u buducnosti, jer block.timestamp nije bas trenutno vreme
+        require(energyAmount > 0, "Energy amount must not be 0");
+        require(pricePerEnergyAmount > 0, "Price must not be 0");
         ep.transferFrom(msg.sender, address(this), energyAmount);
         uint256 id = getID();
 
@@ -118,6 +120,8 @@ contract Trading {
         require(msg.sender == offers[offerId].sellerAddress, "Only creator of the offer can modify it."); //implicitly checks if caller is registered
         require(offers[offerId].validUntil>= block.timestamp, "The offer must be active.");
         require(validUntil > block.timestamp,"Offer deadline must be in the future.");
+        require(energyAmount > 0, "Energy amount must not be 0");
+        require(pricePerEnergyAmount > 0, "Price must not be 0");
         require(energyAmount < offers[offerId].energyAmount || energyAmount <= offers[offerId].energyAmount + ep.balanceOf(msg.sender), "Invalid energy amount");
         require(energyAmount <= ep.allowance(msg.sender, address(this)), "Not enough allowance");
         offers[offerId].energyAmount = energyAmount;
