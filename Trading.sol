@@ -188,11 +188,12 @@ contract Trading {
     Returns:
     address of seller, the amount of energy for sell, expiration of the offer, price (in Wei) per unit of energy
     */
-    function GetOfferDetails(uint256 offerId) public view returns (address, uint256, uint256, uint256){
+    function GetOfferDetails(uint256 offerId) public view returns (uint256, address, uint256, uint256, uint256){
         require(offers[offerId].exists , "No offer with given ID.");
         //require(offers[offerId].validUntil>= block.timestamp, "The offer expired");
         //require(offers[offerId].energyAmount !=0, "The offer is closed");
         return (
+            offerId,
             offers[offerId].sellerAddress, 
             offers[offerId].energyAmount,
             offers[offerId].validUntil,
