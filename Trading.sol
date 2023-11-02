@@ -30,12 +30,14 @@ contract Trading {
     //event that fires when an offer is created
     event OfferCreated(uint256 id, address seller, uint validUntil, uint pricePerEnergyAmount, uint256 energyAmount);
 
-    //event that fires when offer is modified
+    //event that fires when an offer is modified
     event OfferModified(uint256 id, address seller, uint validUntil, uint pricePerEnergyAmount, uint256 energyAmount);
     
-    //event that fires when offer is closed (sold or expired)
+    //event that fires when an offer is closed (sold or expired)
     event OfferClosed(uint256 id);
 
+    //event that fires when tokens are retrieved from an expired offer
+    event TokenRetrieved(uint256 id, address seller);
 
     function getID() private returns (uint256) {
         currentId++;
@@ -152,7 +154,7 @@ contract Trading {
         require(offers[offerId].energyAmount>0, "No tokens the retrieve, the offer was already closed.");
         ep.transfer(msg.sender, offers[offerId].energyAmount );
         offers[offerId].energyAmount = 0;
-
+        emit TokenRetrieved(offerId, offers[offerId].sellerAddress);
     }
 
     /* Method used by energy sellers to cancel their active offers and retrieve their tokens from the smart contract.
