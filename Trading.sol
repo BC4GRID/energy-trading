@@ -146,6 +146,21 @@ contract Trading {
         offers[offerId].energyAmount = 0;
 
     }
+    
+    /* Method used by energy sellers to cancel their active offers and retrieve their tokens from the smart contract.
+
+    Params:
+    offerId - unique id of the offer
+    */
+    function CancelOffer(uint256 offerId) public {
+        require(offers[offerId].exists , "No offer with given ID." );
+        require(msg.sender == offers[offerId].sellerAddress, "Only creator of the offer can cancel offer.");
+        require(offers[offerId].validUntil >= block.timestamp, "The offer must be active active.");
+        require(offers[offerId].energyAmount>0, "No tokens. Offer already closed");
+        ep.transfer(msg.sender, offers[offerId].energyAmount);
+        offers[offerId].energyAmount = 0;
+        emit OfferClosed(offerId);
+    }
 
     /* Method used to list ids of all active energy offers.
        
