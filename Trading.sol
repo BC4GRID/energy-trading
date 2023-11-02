@@ -119,11 +119,19 @@ contract Trading {
         //require(ep.IsRegistered(msg.sender), "Only registered user (meter) may buy energy from offers");
         require(msg.sender == offers[offerId].sellerAddress, "Only creator of the offer can modify it."); //implicitly checks if caller is registered
         require(offers[offerId].validUntil>= block.timestamp, "The offer must be active.");
+        require(offers[offerId].validUntil != validUntil || offers[offerId].pricePerEnergyAmount != pricePerEnergyAmount || offers[offerId].energyAmount != energyAmount, "At least one offer parameter must be changed.");
         require(validUntil > block.timestamp,"Offer deadline must be in the future.");
         require(energyAmount > 0, "Energy amount must not be 0");
         require(pricePerEnergyAmount > 0, "Price must not be 0");
         require(energyAmount < offers[offerId].energyAmount || energyAmount <= offers[offerId].energyAmount + ep.balanceOf(msg.sender), "Invalid energy amount");
         require(energyAmount <= ep.allowance(msg.sender, address(this)), "Not enough allowance");
+        if(offers[offerId].energyAmount > energyAmount) {
+            // the modified offer has less tokens. The difference must be returned to the seller
+            ep.transfer(msg.sender, offers[offerId].energyAmount - energyAmount);
+        } else if(offers[offerId].energyAmount < energyAmount) {
+            // the modified offer has more tokens. The difference must be sent to the contract
+            ep.transferFrom(msg.sender, address(this), energyAmount - offers[offerId].energyAmount);
+        }
         offers[offerId].energyAmount = energyAmount;
         offers[offerId].validUntil = validUntil;
         offers[offerId].pricePerEnergyAmount = pricePerEnergyAmount;
@@ -146,7 +154,7 @@ contract Trading {
         offers[offerId].energyAmount = 0;
 
     }
-    
+
     /* Method used by energy sellers to cancel their active offers and retrieve their tokens from the smart contract.
 
     Params:
