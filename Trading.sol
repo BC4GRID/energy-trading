@@ -234,10 +234,6 @@ contract Trading {
 
     NOTE: This function costs gas only when called by another contract.
 
-    
-    Params:
-    offerId - unique id of the offer
-    
     Returns:
     Array of TradeOfferDetails struct that consists of sellerAddress, energyAmount, validUntil, pricePerEnergyAmount.
     This array is in raw format:
@@ -268,6 +264,40 @@ contract Trading {
             }
         }
         return validOffers;
+    }
+
+    /* Method used to get details for all expired energy offers that still have tokens on them.
+    
+    NOTE: This function costs gas only when called by another contract.
+    
+    Returns:
+    Array of TradeOfferDetails struct that consists of sellerAddress, energyAmount, validUntil, pricePerEnergyAmount.
+    This array is in raw format:
+    {
+        "0": "tuple(address,uint256,uint256,uint256)[]:
+        0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2,5,1797012247,1,0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2,3,1797012247,2,0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2,5,1797012247,3"
+    }
+    and must be parsed when received. 
+    */
+    function ListExpiredOffersWithAmount() public view returns (TradeOfferDetails[] memory){
+        TradeOfferDetails[] memory timeoutOffers;
+        uint256 size = 0;
+        for (uint256 i=1; i<=currentId; i++) {
+            if(offers[i].exists && offers[i].validUntil < block.timestamp && offers[i].energyAmount != 0) {
+                size++;
+            }
+        }
+
+        uint256 j = 0;
+        timeoutOffers = new TradeOfferDetails[](size);
+
+        for (uint256 i=1; i<=currentId; i++) {
+            if(offers[i].exists && offers[i].validUntil < block.timestamp && offers[i].energyAmount != 0) {
+                timeoutOffers[j] = TradeOfferDetails(offers[i].sellerAddress, offers[i].energyAmount, offers[i].validUntil, offers[i].pricePerEnergyAmount);
+                j++;
+            }
+        }
+        return timeoutOffers;
     }
 
     
