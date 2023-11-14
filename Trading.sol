@@ -31,10 +31,10 @@ contract Trading {
     event OfferCreated(uint256 id, address seller, uint validUntil, uint pricePerEnergyAmount, uint256 energyAmount);
 
     //event that fires when an offer is modified
-    event OfferModified(uint256 id, address seller, uint validUntil, uint pricePerEnergyAmount, uint256 energyAmount);
+    event OfferModified(uint256 id, address seller, uint validUntil, uint pricePerEnergyAmount, uint256 energyAmount, address buyer);
     
     //event that fires when an offer is closed (sold or expired)
-    event OfferClosed(uint256 id);
+    event OfferClosed(uint256 id, address seller, uint validUntil, uint pricePerEnergyAmount, uint256 energyAmount, address buyer);
 
     //event that fires when tokens are retrieved from an expired offer
     event TokenRetrieved(uint256 id, address seller);
@@ -64,7 +64,7 @@ contract Trading {
     function CreateEnergyOffer(uint validUntil, uint pricePerEnergyAmount, uint256 energyAmount) public {
         require(ep.IsRegistered(msg.sender), "Only registered user (meter) may make sell offers");
         require(energyAmount <= ep.balanceOf(msg.sender), "Must have tokens to sell.");
-        require(validUntil > block.timestamp,"Offer deadline must be in the future.");//TODO: videti koliko u buducnosti, jer block.timestamp nije bas trenutno vreme
+        require(validUntil > block.timestamp,"Offer deadline must be in the future.");
         require(energyAmount > 0, "Energy amount must not be 0");
         require(pricePerEnergyAmount > 0, "Price must not be 0");
         ep.transferFrom(msg.sender, address(this), energyAmount);
@@ -101,9 +101,9 @@ contract Trading {
         ep.transfer(msg.sender, energyAmount);
         
         if(offers[offerId].energyAmount == 0)
-            emit OfferClosed(offerId);
+            emit OfferClosed(offerId, offers[offerId].sellerAddress, offers[offerId].validUntil, offers[offerId].pricePerEnergyAmount, offers[offerId].energyAmount, msg.sender);
         else 
-            emit OfferModified(offerId, offers[offerId].sellerAddress, offers[offerId].validUntil, offers[offerId].pricePerEnergyAmount, offers[offerId].energyAmount);
+            emit OfferModified(offerId, offers[offerId].sellerAddress, offers[offerId].validUntil, offers[offerId].pricePerEnergyAmount, offers[offerId].energyAmount, msg.sender);
     }
 
     /* Method used by energy sellers to modify their existing offers. Fires OfferModified event.
@@ -118,8 +118,7 @@ contract Trading {
     energyAmount - new amount of energy (tokens) for sell
     */
     function ModifyOffer(uint256 offerId, uint validUntil, uint pricePerEnergyAmount, uint256 energyAmount) public {
-        //require(ep.IsRegistered(msg.sender), "Only registered user (meter) may buy energy from offers");
-        require(msg.sender == offers[offerId].sellerAddress, "Only creator of the offer can modify it."); //implicitly checks if caller is registered
+        require(msg.sender == offers[offerId].sellerAddress, "Only creator of the offer can modify it."); 
         require(offers[offerId].validUntil>= block.timestamp, "The offer must be active.");
         require(offers[offerId].validUntil != validUntil || offers[offerId].pricePerEnergyAmount != pricePerEnergyAmount || offers[offerId].energyAmount != energyAmount, "At least one offer parameter must be changed.");
         require(validUntil > block.timestamp,"Offer deadline must be in the future.");
@@ -137,7 +136,7 @@ contract Trading {
         offers[offerId].energyAmount = energyAmount;
         offers[offerId].validUntil = validUntil;
         offers[offerId].pricePerEnergyAmount = pricePerEnergyAmount;
-        emit OfferModified(offerId, offers[offerId].sellerAddress , offers[offerId].validUntil, offers[offerId].pricePerEnergyAmount, offers[offerId].energyAmount);
+        emit OfferModified(offerId, offers[offerId].sellerAddress , offers[offerId].validUntil, offers[offerId].pricePerEnergyAmount, offers[offerId].energyAmount, address(0));
     }
 
     /* Method used by energy sellers to retrieve their tokens from the smart contract after the offer expires.
@@ -169,7 +168,7 @@ contract Trading {
         require(offers[offerId].energyAmount>0, "No tokens. Offer already closed");
         ep.transfer(msg.sender, offers[offerId].energyAmount);
         offers[offerId].energyAmount = 0;
-        emit OfferClosed(offerId);
+        emit OfferClosed(offerId, offers[offerId].sellerAddress, offers[offerId].validUntil, offers[offerId].pricePerEnergyAmount, offers[offerId].energyAmount, address(0));
     }
 
     /* Method used to list ids of all active energy offers.
