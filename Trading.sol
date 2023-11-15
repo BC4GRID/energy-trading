@@ -120,7 +120,8 @@ contract Trading {
     function ModifyOffer(uint256 offerId, uint validUntil, uint pricePerEnergyAmount, uint256 energyAmount) public {
         require(msg.sender == offers[offerId].sellerAddress, "Only creator of the offer can modify it."); 
         require(offers[offerId].validUntil>= block.timestamp, "The offer must be active.");
-        require(offers[offerId].validUntil != validUntil || offers[offerId].pricePerEnergyAmount != pricePerEnergyAmount || offers[offerId].energyAmount != energyAmount, "At least one offer parameter must be changed.");
+        require(offers[offerId].validUntil != validUntil || offers[offerId].pricePerEnergyAmount != pricePerEnergyAmount || 
+                offers[offerId].energyAmount != energyAmount, "At least one offer parameter must be changed.");
         require(validUntil > block.timestamp,"Offer deadline must be in the future.");
         require(energyAmount > 0, "Energy amount must not be 0");
         require(pricePerEnergyAmount > 0, "Price must not be 0");
