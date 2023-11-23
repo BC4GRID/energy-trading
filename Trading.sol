@@ -13,6 +13,7 @@ struct TradeOffer {
 }
 
 struct TradeOfferDetails {
+    uint256 offerId;
     address payable sellerAddress;
     uint256 energyAmount;
     uint validUntil; //unix timestamp 
@@ -259,7 +260,7 @@ contract Trading {
 
         for (uint256 i=1; i<=currentId; i++) {
             if(offers[i].exists && offers[i].validUntil > block.timestamp && offers[i].energyAmount != 0) {
-                validOffers[j] = TradeOfferDetails(offers[i].sellerAddress, offers[i].energyAmount, offers[i].validUntil, offers[i].pricePerEnergyAmount);
+                validOffers[j] = TradeOfferDetails(i, offers[i].sellerAddress, offers[i].energyAmount, offers[i].validUntil, offers[i].pricePerEnergyAmount);
                 j++;
             }
         }
@@ -293,7 +294,7 @@ contract Trading {
 
         for (uint256 i=1; i<=currentId; i++) {
             if(offers[i].exists && offers[i].validUntil < block.timestamp && offers[i].energyAmount != 0) {
-                timeoutOffers[j] = TradeOfferDetails(offers[i].sellerAddress, offers[i].energyAmount, offers[i].validUntil, offers[i].pricePerEnergyAmount);
+                timeoutOffers[j] = TradeOfferDetails(i, offers[i].sellerAddress, offers[i].energyAmount, offers[i].validUntil, offers[i].pricePerEnergyAmount);
                 j++;
             }
         }
