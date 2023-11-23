@@ -267,7 +267,7 @@ contract Trading {
         return validOffers;
     }
 
-    /* Method used to get details for all expired energy offers that still have tokens on them.
+    /* Method used to get details for all of user's expired energy offers that still have tokens on them.
     
     NOTE: This function costs gas only when called by another contract.
     
@@ -284,7 +284,7 @@ contract Trading {
         TradeOfferDetails[] memory timeoutOffers;
         uint256 size = 0;
         for (uint256 i=1; i<=currentId; i++) {
-            if(offers[i].exists && offers[i].validUntil < block.timestamp && offers[i].energyAmount != 0) {
+            if(offers[i].exists && offers[i].validUntil < block.timestamp && offers[i].energyAmount != 0 && msg.sender == offers[i].sellerAddress) {
                 size++;
             }
         }
@@ -293,7 +293,7 @@ contract Trading {
         timeoutOffers = new TradeOfferDetails[](size);
 
         for (uint256 i=1; i<=currentId; i++) {
-            if(offers[i].exists && offers[i].validUntil < block.timestamp && offers[i].energyAmount != 0) {
+            if(offers[i].exists && offers[i].validUntil < block.timestamp && offers[i].energyAmount != 0 && msg.sender == offers[i].sellerAddress) {
                 timeoutOffers[j] = TradeOfferDetails(i, offers[i].sellerAddress, offers[i].energyAmount, offers[i].validUntil, offers[i].pricePerEnergyAmount);
                 j++;
             }
