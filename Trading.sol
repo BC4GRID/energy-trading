@@ -37,6 +37,9 @@ contract Trading {
     //event that fires when an offer is closed (sold or expired)
     event OfferClosed(uint256 id, address seller, uint validUntil, uint pricePerEnergyAmount, uint256 energyAmount, address buyer);
 
+    //event that fires when someone buys from an offer
+    event TokensBought(uint256 id, address buyer, address seller, uint pricePerEnergyAmount, uint256 energyBought, uint256 totalValue, uint when);
+
     //event that fires when tokens are retrieved from an expired offer
     event TokenRetrieved(uint256 id, address seller);
 
@@ -101,6 +104,7 @@ contract Trading {
         offers[offerId].energyAmount -= energyAmount;
         ep.transfer(msg.sender, energyAmount);
         
+        emit TokensBought(offerId, msg.sender, offers[offerId].sellerAddress, offers[offerId].pricePerEnergyAmount, energyAmount, msg.value, block.timestamp);
         if(offers[offerId].energyAmount == 0)
             emit OfferClosed(offerId, offers[offerId].sellerAddress, offers[offerId].validUntil, offers[offerId].pricePerEnergyAmount, offers[offerId].energyAmount, msg.sender);
         else 
