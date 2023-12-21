@@ -17,9 +17,9 @@ contract TokenDispenser is ERC20 {
         _;
     }
 
-    // the number of decimals is set to 2. For example, a balance of `200` tokens is displayed to a user as `2.00`
+    // the number of decimals is set to 3. For example, a balance of `2000` tokens is displayed to a user as `2`
     function decimals() public view virtual override returns (uint8) {
-        return 2;
+        return 3;
     }
 
     /* Method used to register smart meter.
