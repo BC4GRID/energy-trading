@@ -38,7 +38,7 @@ contract Trading {
     event OfferClosed(uint256 id, address seller, uint validUntil, uint pricePerEnergyAmount, uint256 energyAmount, address buyer);
 
     //event that fires when someone buys from an offer
-    event TokensBought(uint256 id, address buyer, address seller, uint pricePerEnergyAmount, uint256 energyBought, uint256 totalValue, uint when);
+    event TokensBought(uint256 id, address indexed buyer, address indexed seller, uint pricePerEnergyAmount, uint256 energyBought, uint256 totalValue, uint when);
 
     //event that fires when tokens are retrieved from an expired offer
     event TokenRetrieved(uint256 id, address seller);
